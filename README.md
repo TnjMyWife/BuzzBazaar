@@ -1,4 +1,4 @@
-# BuzzBazar项目指导
+# BuzzBazaar项目指导
 
 ## 项目结构树
 
@@ -17,7 +17,7 @@
 |                2. 依赖管理：列出项目所有依赖的库(dependencies部分)，	   |					Maven 会根据这些配置自动下载和引入这些依赖。
 |                3. 构建配置：指定项目的构建路径、插件、目标环境，Maven会      |					根据这些配置来执行构建的生命周期。
 |                4. 插件管理：定义项目使用的插件及其配置，插件可以用于执行各种    |					构建任务，如编译、测试、打包、部署等。(这部分在IDEA右侧栏中)
-├── runBuzzBazar.bat:自己写的一键运行脚本，**注意，只在你准备上传服务器前，最后在本地测试使用**，其他调试可通过IDEA直接run`MyBBSApplication`；点击后会自动运行target文件夹(maven打包会自动生成)中打包好的jar，即可登录localhost测试。注意，运行前，必须执行maven生命周期中的`clean`清除先前的包，`package`打包当前的项目生成target/BuzzBzar.jar。运行后，可在当前目录的`server.log`查看报错。
+├── runBuzzBazaar.bat:自己写的一键运行脚本，**注意，只在你准备上传服务器前，最后在本地测试使用**，其他调试可通过IDEA直接run`MyBBSApplication`；点击后会自动运行target文件夹(maven打包会自动生成)中打包好的jar，即可登录localhost测试。注意，运行前，必须执行maven生命周期中的`clean`清除先前的包，`package`打包当前的项目生成target/BuzzBzar.jar。运行后，可在当前目录的`server.log`查看报错。
 |
 |
 └── build_table.sql:一键生成五个基本表。

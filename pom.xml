@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.my.bbs</groupId>
-    <artifactId>BuzzBazar</artifactId>
+    <artifactId>BuzzBazaar</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>BuzzBazar</name>
-    <description>BuzzBazar-Project</description>
+    <name>BuzzBazaar</name>
+    <description>BuzzBazaar-Project</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

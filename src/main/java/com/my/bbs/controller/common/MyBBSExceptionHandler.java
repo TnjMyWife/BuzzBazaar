@@ -31,7 +31,7 @@ public class MyBBSExceptionHandler {
             modelAndView.addObject("url", req.getRequestURL());
             modelAndView.addObject("stackTrace", e.getStackTrace());
             modelAndView.addObject("author", "Aaron");
-            modelAndView.addObject("ltd", "BuzzBazar");
+            modelAndView.addObject("ltd", "BuzzBazaar");
             modelAndView.setViewName("error");
             return modelAndView;
         }
