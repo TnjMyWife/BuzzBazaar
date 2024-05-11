@@ -8,7 +8,7 @@
 │   └── main
 │       ├── java:项目运行的全部java源代码，包含控制器、拦截器、视图层、数据持久	|				化、数据访问接口等。详见后续`com.my.bbs`解读。
 │       ├── resources：
-│       │   ├── mapper: MyBatis框架的xml配置，负责
+│       │   ├── mapper: MyBatis框架的xml配置，负责负责数据访问层的映射，将SQL语句与Java对象关联起来。
 │       │   ├── static: css文件，logo等图片，js，参考的layui网页框架。
 │       │   └── templates: 前端页面HTML文件
 │       │   └── application.properties：包含了应用程序运行时需要的各种配置信 |						息，如数据库连接参数、服务器端口、日志级别、缓存设置等。
