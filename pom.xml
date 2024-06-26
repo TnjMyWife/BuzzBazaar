@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.my.bbs</groupId>
     <artifactId>BuzzBazaar</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <name>BuzzBazaar</name>
     <description>BuzzBazaar-Project</description>
 
@@ -71,7 +71,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.20</version>
+            <version>1.18.24</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -102,16 +102,18 @@
     <build>
         <resources>
             <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+            <resource>
                 <directory>src/main/resources</directory>
                 <includes>
-                    <include>jdbc.properties</include>
-                    <include>*.xml</include>
-                    <include>ipdb/*.xdb</include>
+                    <include>**/*.*</include>
                 </includes>
             </resource>
         </resources>
-
-
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

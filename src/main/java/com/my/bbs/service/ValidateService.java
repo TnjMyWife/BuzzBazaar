@@ -23,16 +23,7 @@ public class ValidateService{
     @Autowired
     private ValidateMapper validateMapper;
 
-    /**
-     * 发送邮件：@Async进行异步调用发送邮件接口
-     * @param email
-     */
-//    @Async
-//    public void sendPasswordResetEmail(SimpleMailMessage email){
-//
-//        javaMailSender.send(email);
-//    }
-
+    /* 发送邮件：@Async进行异步调用发送邮件接口 */
     @Async
     public void sendPasswordResetEmail(MimeMessage email){
         javaMailSender.send(email);
