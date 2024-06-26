@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
-    public String register(String loginName, String password, String nickName) {
+    public String register(String loginName, String password, String nickName, String area) {
         // 用户名已存在
         if (userMapper.selectByLoginName(loginName) != null) {
             return ServiceResultEnum.SAME_LOGIN_NAME_EXIST.getResult();
@@ -33,7 +33,8 @@ public class UserServiceImpl implements UserService {
         // 默认介绍
         newUser.setIntroduce("这个人很懒，什么都没留下~");
         // 居住地
-        newUser.setLocation("未知");
+        newUser.setLocation(area);
+        // 性别
         newUser.setGender("未知");
         String passwordMD5 = MD5Util.MD5Encode(password, "UTF-8");
         newUser.setPasswordMd5(passwordMD5);
@@ -44,7 +45,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String login(String loginName, String passwordMD5, HttpSession httpSession) {
+    public String login(String loginName, String passwordMD5, String area, HttpSession httpSession) {
         UserEntity user = userMapper.selectByLoginNameAndPasswd(loginName, passwordMD5);
         // 检查用户对象和会话对象
         if (user != null && httpSession != null) {
@@ -52,6 +53,8 @@ public class UserServiceImpl implements UserService {
             httpSession.setAttribute(Constants.USER_SESSION_KEY, user);
             // 修改上一次登录时间
             user.setLastLoginTime(new Date());
+            // 修改所在位置
+            user.setLocation(area);
             userMapper.updateByPrimaryKeySelective(user);
             return ServiceResultEnum.SUCCESS.getResult();
         }
@@ -96,12 +99,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserEntity getUserByLoginName(String loginName) {
+        return userMapper.selectByLoginName(loginName);
+    }
+
+    @Override
     public Boolean updatePassword(Long userId, String oldPassword, String newPassword) {
         UserEntity user = userMapper.selectByPrimaryKey(userId);
         // 只有正常用户可修改
         if (user != null && user.getUserStatus().intValue() == 0) {
             String originalPasswordMd5 = MD5Util.MD5Encode(oldPassword, "UTF-8");
             String newPasswordMd5 = MD5Util.MD5Encode(newPassword, "UTF-8");
+
             // 检查原密码是否正确
             if (originalPasswordMd5.equals(user.getPasswordMd5())) {
                 // 设置新密码
@@ -109,6 +118,21 @@ public class UserServiceImpl implements UserService {
                 if (userMapper.updateByPrimaryKeySelective(user) > 0) {
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Boolean resetPassword(Long userId, String password) {
+        UserEntity user = userMapper.selectByPrimaryKey(userId);
+        // 只有正常用户可修改
+        if (user != null && user.getUserStatus().intValue() == 0) {
+            String newPasswordMd5 = MD5Util.MD5Encode(password, "UTF-8");
+            // 设置新密码
+            user.setPasswordMd5(newPasswordMd5);
+            if (userMapper.updateByPrimaryKeySelective(user) > 0) {
+                return true;
             }
         }
         return false;

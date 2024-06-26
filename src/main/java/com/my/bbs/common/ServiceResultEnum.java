@@ -20,9 +20,9 @@ public enum ServiceResultEnum {
 
     LOGIN_VERIFY_CODE_ERROR("验证码错误！"),
 
-    LOGIN_ERROR("登录失败！"),
+    LOGIN_ERROR("登录名或密码错误！"),
 
-    DB_ERROR("database error");
+    DB_ERROR("数据库错误！");
 
     private String result;
 

@@ -1,5 +1,6 @@
 package com.my.bbs.controller.rest;
 
+import com.github.houbb.sensitive.word.core.SensitiveWordHelper;
 import com.my.bbs.common.Constants;
 import com.my.bbs.common.ServiceResultEnum;
 import com.my.bbs.entity.PostEntity;
@@ -9,10 +10,7 @@ import com.my.bbs.service.CollectService;
 import com.my.bbs.service.CommentService;
 import com.my.bbs.service.PostService;
 import com.my.bbs.service.UserService;
-import com.my.bbs.util.MD5Util;
-import com.my.bbs.util.PatternUtil;
-import com.my.bbs.util.Result;
-import com.my.bbs.util.ResultGenerator;
+import com.my.bbs.util.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -22,6 +20,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class UserController {
@@ -46,6 +45,16 @@ public class UserController {
     @GetMapping({"/register", "/register.html"})
     public String registerPage() {
         return "user/reg";
+    }
+
+    @GetMapping({"/find", "/find.html"})
+    public String findPage() {
+        return "user/find";
+    }
+
+    @GetMapping({"/reset", "/reset.html"})
+    public String resetPage() {
+        return "user/reset";
     }
 
     @GetMapping("/userCenter/{userId}")
@@ -104,7 +113,6 @@ public class UserController {
     @ResponseBody
     public Result updateInfo(@RequestParam("nickName") String nickName,
                              @RequestParam("userGender") int userGender,
-                             @RequestParam("location") String location,
                              @RequestParam("introduce") String introduce,
                              HttpSession httpSession) {
 
@@ -114,11 +122,15 @@ public class UserController {
         if (userGender < 1 || userGender > 2) {
             return ResultGenerator.genFailResult("userGender参数错误");
         }
-        if (!StringUtils.hasLength(location)) {
-            return ResultGenerator.genFailResult("location参数错误");
-        }
         if (!StringUtils.hasLength(introduce)) {
             return ResultGenerator.genFailResult("introduce参数错误");
+        }
+        List<String> sentitives = SensitiveWordHelper.findAll(introduce);
+        if (!sentitives.isEmpty()) {
+            String joinedSentitives = sentitives.stream()
+                    .map(s -> "\"" + s + "\"")
+                    .collect(Collectors.joining(", "));
+            return ResultGenerator.genFailResult("审核未通过。原因：签名包含敏感内容。" + joinedSentitives);
         }
         UserEntity user = (UserEntity) httpSession.getAttribute(Constants.USER_SESSION_KEY);
         user.setNickName(nickName);
@@ -128,7 +140,6 @@ public class UserController {
         if (userGender == 2) {
             user.setGender("女");
         }
-        user.setLocation(location);
         user.setIntroduce(introduce);
         if (userService.updateUserInfo(user, httpSession)) {
             Result result = ResultGenerator.genSuccessResult();
@@ -187,6 +198,7 @@ public class UserController {
                            @RequestParam("verifyCode") String verifyCode,
                            @RequestParam("nickName") String nickName,
                            @RequestParam("password") String password,
+                           HttpServletRequest request,
                            HttpSession httpSession) {
         // 检查参数
         if (!StringUtils.hasLength(loginName)) {
@@ -206,7 +218,9 @@ public class UserController {
         if (!StringUtils.hasLength(kaptchaCode) || !verifyCode.toLowerCase().equals(kaptchaCode)) {
             return ResultGenerator.genFailResult(ServiceResultEnum.LOGIN_VERIFY_CODE_ERROR.getResult());
         }
-        String registerResult = userService.register(loginName, password, nickName);
+        String area = IpUtil.getLocation(request);
+        System.out.println(area);
+        String registerResult = userService.register(loginName, password, nickName, area);
         // 注册成功
         if (ServiceResultEnum.SUCCESS.getResult().equals(registerResult)) {
             httpSession.removeAttribute(Constants.VERIFY_CODE_KEY);// 删除session中的验证码
@@ -222,6 +236,7 @@ public class UserController {
     public Result login(@RequestParam("loginName") String loginName,
                         @RequestParam("verifyCode") String verifyCode,
                         @RequestParam("password") String password,
+                        HttpServletRequest request,
                         HttpSession httpSession) {
         if (!StringUtils.hasLength(loginName)) {
             return ResultGenerator.genFailResult(ServiceResultEnum.LOGIN_NAME_NULL.getResult());
@@ -240,7 +255,10 @@ public class UserController {
         if (!StringUtils.hasLength(kaptchaCode) || !verifyCode.toLowerCase().equals(kaptchaCode)) {
             return ResultGenerator.genFailResult(ServiceResultEnum.LOGIN_VERIFY_CODE_ERROR.getResult());
         }
-        String loginResult = userService.login(loginName, MD5Util.MD5Encode(password, "UTF-8"), httpSession);
+        String area = IpUtil.getLocation(request);
+        System.out.println(area);
+
+        String loginResult = userService.login(loginName, MD5Util.MD5Encode(password, "UTF-8"), area, httpSession);
         // 登录成功
         if (ServiceResultEnum.SUCCESS.getResult().equals(loginResult)) {
             httpSession.removeAttribute(Constants.VERIFY_CODE_KEY);//删除session中的验证码

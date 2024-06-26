@@ -33,7 +33,7 @@
       #{userId,jdbcType=BIGINT}
     </foreach>
   </select>
-  <select id="selectByLoginName" resultType="com.my.bbs.entity.UserEntity">
+  <select id="selectByLoginName" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from user

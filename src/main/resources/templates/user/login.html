@@ -11,6 +11,7 @@
             <ul class="layui-tab-title">
                 <li class="layui-this">登入</li>
                 <li><a th:href="@{/register}">注册</a></li>
+                <li><a th:href="@{/find}">找回密码</a></li>
             </ul>
             <div class="layui-form layui-tab-content" id="LAY_ucm" style="padding: 20px 0;">
                 <div class="layui-tab-item layui-show">
@@ -29,7 +30,6 @@
                                     <input type="password" id="password" name="password" required lay-verify="required"
                                            autocomplete="off" class="layui-input">
                                 </div>
-                                <div class="layui-form-mid layui-word-aux">6到20个字符</div>
                             </div>
                             <div class="layui-form-item">
                                 <label for="verifyCode" class="layui-form-label">验证码</label>
@@ -44,10 +44,9 @@
                              alt="单击图片刷新！"></span>
                                 </div>
                             </div>
-                            <div class="layui-form-item">
+                            <div class="layui-form-item" style="margin-left: 10%">
                                 <button class="layui-btn" lay-filter="*" lay-submit onclick="login()">立即登录</button>
-                                <span style="padding-left:20px;">
-                </span>
+                                <span style="padding-left:20px;"></span>
                             </div>
                         </form>
                     </div>
@@ -67,15 +66,14 @@
     layui.use(['layer', 'jquery'], function () {
         var layer = layui.layer;
         var $ = layui.$;
+        window.find = function () {
+            window.location.href = '/find';
+        }
+
         window.login = function () {
             var loginName = $("#loginName").val();
             if (!validEmail(loginName)) {
                 layer.alert('请输入正确的登录名!', {title: '提醒', skin: 'layui-layer-molv', icon: 2});
-                return false;
-            }
-            var password = $("#password").val();
-            if (!validPassword(password)) {
-                layer.alert('请输入正确的密码格式!', {title: '提醒', skin: 'layui-layer-molv', icon: 2});
                 return false;
             }
             var verifyCode = $("#verifyCode").val();

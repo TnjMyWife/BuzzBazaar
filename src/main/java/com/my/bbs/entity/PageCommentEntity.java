@@ -19,6 +19,8 @@ public class PageCommentEntity {
 
     private String nickName;
 
+    private String location;
+
     private String headImgUrl;
 
     public Long getPostId() {
@@ -75,6 +77,14 @@ public class PageCommentEntity {
 
     public void setNickName(String nickName) {
         this.nickName = nickName;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public String getHeadImgUrl() {

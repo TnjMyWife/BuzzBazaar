@@ -57,7 +57,7 @@
 
 点击+号新增MySQL数据源,正确输入你的数据库用户、密码、以及数据库，测试连接。
 
-<img src="image\image-20240511014323863.png" alt="image-20240511014323863" style="zoom:50%;" />
+![image-20240511014321628](E:\privat\Work\software enginering\project\BBS_test\image-20240511014321628.png)
 
 连接不上的话让我看看。
 

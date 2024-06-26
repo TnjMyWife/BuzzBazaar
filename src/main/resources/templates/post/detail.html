@@ -77,22 +77,41 @@
                 <div class="detail-body photos" th:utext="${bbsPost.postContent}">
                 </div>
                 <div style="text-align: center;">
+                    <th:block>
+                        <a href="##" th:onclick="'like('+${bbsPost.postId}+')'">
+                        <span style="color: red; margin: 10px">
+                            <i class="iconfont icon-zan"></i>
+                            &nbsp;&nbsp;<th:block th:text="${bbsPost.postLikes}"></th:block>
+                        </span>
+                        </a>
+                    </th:block>
+
                     <th:block th:unless="${currentUserCollectFlag}">
                         <a href="##" th:onclick="'collect('+${bbsPost.postId}+')'">
-                        <span style="color: red;">
-                            <i class="iconfont icon-zan"></i>
-                            收藏&nbsp;&nbsp;(<th:block th:text="${bbsPost.postCollects}"></th:block>)
+                        <span style="color: grey; margin: 10px">
+                            <i class="iconfont icon-shoucang"></i>
+                            &nbsp;&nbsp;<th:block th:text="${bbsPost.postCollects}"></th:block>
                         </span>
                         </a>
                     </th:block>
                     <th:block th:if="${currentUserCollectFlag}">
                         <a href="##" th:onclick="'delCollect('+${bbsPost.postId}+')'">
-                        <span style="color: grey;">
-                            <i class="iconfont icon-zan"></i>
-                            取消收藏&nbsp;&nbsp;(<th:block th:text="${bbsPost.postCollects}"></th:block>)
+                        <span style="color: red; margin: 10px">
+                            <i class="iconfont icon-shoucang"></i>
+                            &nbsp;&nbsp;<th:block th:text="${bbsPost.postCollects}"></th:block>
                         </span>
                         </a>
                     </th:block>
+
+                    <th:block>
+                        <a href="##" th:onclick="'share('+${bbsPost.postId}+')'">
+                        <span style="color: grey; margin: 10px">
+                            <i class="iconfont icon-zhuanfa"></i>
+                            &nbsp;&nbsp;<th:block th:text="${bbsPost.postShares}"></th:block>
+                        </span>
+                        </a>
+                    </th:block>
+
                 </div>
             </div>
 
@@ -104,7 +123,7 @@
                 <ul class="jieda" id="jieda">
                     <th:block th:if="${#lists.isEmpty(commentsPage.list)}">
                         <!-- 无数据时 -->
-                        <li class="fly-none">消灭零回复</li>
+                        <li class="fly-none">快来抢沙发~</li>
                     </th:block>
                     <th:block th:unless="${#lists.isEmpty(commentsPage.list)}">
                         <th:block th:each="bbsCommentListEntity : ${commentsPage.list}">
@@ -124,7 +143,9 @@
                                     </div>
                                     <div class="detail-hits">
                                         <span th:text="${#dates.format(bbsCommentListEntity.commentCreateTime, 'yyyy-MM-dd HH:mm:ss')}">2021-08-01</span>
+                                        <span th:text="${bbsCommentListEntity.location}"><i class="iconfont icon-chengshi"></i>阿姆斯特丹:未知</span>
                                     </div>
+
                                 </div>
                                 <div class="detail-body jieda-body photos">
                                     <p th:text="${bbsCommentListEntity.commentBody}">回复内容</p>
@@ -132,10 +153,7 @@
                                 <div class="jieda-reply">
                                     <a href="#replyTextarea"
                                        th:onclick="'preReply('+${bbsCommentListEntity.commentUserId}+')'">
-                                    <span type="reply">
-                                    <i class="iconfont icon-huifu"></i>
-                                    回复
-                                    </span>
+                                        <span type="reply"><i class="iconfont icon-huifu"></i>回复</span>
                                     </a>
                                     <div class="jieda-admin">
                                         <span type="del" th:onclick="'delReply('+${bbsCommentListEntity.commentId}+')'">删除</span>
@@ -206,19 +224,6 @@
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label for="verifyCode" class="layui-form-label">验证码</label>
-                            <div class="layui-input-inline">
-                                <input type="text" id="verifyCode" name="verifyCode" required lay-verify="required"
-                                       placeholder="请输入验证码" autocomplete="off" class="layui-input">
-                            </div>
-                            <div class="layui-form-mid">
-                             <span><img data-tooltip="看不清楚？换一张"
-                                        th:src="@{/common/captcha}"
-                                        onclick="this.src='/common/captcha?d='+new Date()*1"
-                                        alt="单击图片刷新！"></span>
-                            </div>
-                        </div>
-                        <div class="layui-form-item">
                             <input type="hidden" name="jid" value="123">
                             <button class="layui-btn" lay-filter="*" lay-submit onclick="reply()">提交回复</button>
                         </div>
@@ -247,30 +252,6 @@
                     </th:block>
                 </th:block>
             </dl>
-            <!--
-            <div class="fly-panel">
-                <div class="fly-panel-title">
-                    我的QQ
-                </div>
-                <div class="fly-panel-main">
-                    <a href="https://juejin.im/user/59199e22a22b9d0058279886" target="_blank">
-                        <img style="max-width: 100%;" th:src="@{/images/my-gzh-qrcode.jpg}">
-                    </a>
-                </div>
-            </div>
-
-            <div class="fly-panel">
-                <div class="fly-panel-title">
-                    我的微信
-                </div>
-                <div class="fly-panel-main">
-                    <a href="https://item.jd.com/12890115.html" target="_blank">
-                        <img style="max-width: 100%;" th:src="@{/images/my-book01.png}">
-                    </a>
-                </div>
-            </div>
-            -->
-
         </div>
     </div>
 </div>
@@ -299,11 +280,6 @@
         //评论
         window.reply = function (postId) {
             var $ = layui.$;
-            var verifyCode = $("#verifyCode").val();
-            if (!validLength(verifyCode, 5)) {
-                layer.alert('请输入正确的验证码!', {title: '提醒', skin: 'layui-layer-molv', icon: 2});
-                return false;
-            }
             var commentBody = $("#commentBody").val();
             if (isNull(commentBody)) {
                 layer.alert('请输入评论!', {title: '提醒', skin: 'layui-layer-molv', icon: 2});
@@ -317,7 +293,7 @@
                 data: params,
                 success: function (result) {
                     if (result.resultCode == 200) {
-                        layer.confirm('评论成功!将刷新本页面...', {
+                        layer.confirm('评论成功!', {
                             icon: 3,
                             skin: 'layui-layer-molv',
                             title: '提示'
@@ -344,7 +320,7 @@
                 url: '/delReply/' + commentId,
                 success: function (result) {
                     if (result.resultCode == 200) {
-                        layer.confirm('删除成功!将刷新本页面...', {
+                        layer.confirm('删除评论成功!', {
                             icon: 3,
                             skin: 'layui-layer-molv',
                             title: '提示'
@@ -363,6 +339,32 @@
             });
         }
 
+        //点赞
+        window.like = function (postId) {
+            var $ = layui.$;
+            $.ajax({
+                type: 'POST',//方法类型
+                url: '/likePost/' + postId,
+                success: function (result) {
+                    if (result.resultCode == 200) {
+                        layer.confirm('点赞成功!', {
+                            icon: 3,
+                            skin: 'layui-layer-molv',
+                            title: '提示'
+                        }, function (index) {
+                            layer.close(index);
+                            window.location.reload();
+                        });
+                    } else {
+                        layer.msg(result.message);
+                    }
+                },
+                error: function () {
+                    layer.alert('操作失败!', {title: '提醒', skin: 'layui-layer-molv', icon: 2});
+                }
+            });
+        }
+
         //收藏
         window.collect = function (postId) {
             var $ = layui.$;
@@ -371,7 +373,7 @@
                 url: '/addCollect/' + postId,
                 success: function (result) {
                     if (result.resultCode == 200) {
-                        layer.confirm('收藏成功!将刷新本页面...', {
+                        layer.confirm('收藏成功!', {
                             icon: 3,
                             skin: 'layui-layer-molv',
                             title: '提示'
@@ -398,7 +400,7 @@
                 url: '/delCollect/' + postId,
                 success: function (result) {
                     if (result.resultCode == 200) {
-                        layer.confirm('取消收藏成功!将刷新本页面...', {
+                        layer.confirm('取消收藏成功!', {
                             icon: 3,
                             skin: 'layui-layer-molv',
                             title: '提示'
@@ -410,6 +412,46 @@
                         layer.msg(result.message);
                     }
                     ;
+                },
+                error: function () {
+                    layer.alert('操作失败!', {title: '提醒', skin: 'layui-layer-molv', icon: 2});
+                }
+            });
+        }
+
+        //点赞
+        window.share = function (postId) {
+            var $ = layui.$;
+            $.ajax({
+                type: 'POST',//方法类型
+                url: '/sharePost/' + postId,
+                success: function (result) {
+                    if (result.resultCode == 200) {
+                        const url = window.location.href;
+                        const tempTextarea = document.createElement('textarea');
+                        tempTextarea.value = url;
+                        document.body.appendChild(tempTextarea);
+                        tempTextarea.select();
+                        tempTextarea.setSelectionRange(0, 99999);
+                        var successful = document.execCommand('copy');
+
+                        document.body.removeChild(tempTextarea);
+
+                        if (successful) {
+                            layer.confirm('转发成功！URL已复制到剪贴板', {
+                                icon: 3,
+                                skin: 'layui-layer-molv',
+                                title: '提示'
+                            }, function (index) {
+                                layer.close(index);
+                                window.location.reload();
+                            });
+                        } else {
+                            layui.layer.alert('复制失败，请手动复制URL', {title: '提醒', icon: 2});
+                        }
+                    } else {
+                        layer.msg(result.message);
+                    }
                 },
                 error: function () {
                     layer.alert('操作失败!', {title: '提醒', skin: 'layui-layer-molv', icon: 2});

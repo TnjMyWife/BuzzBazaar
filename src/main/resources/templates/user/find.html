@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{header::head-fragment('首页')}">
+</head>
+<body>
+<div th:replace="~{header::header-fragment}"></div>
+
+<div class="layui-container fly-marginTop">
+    <div class="fly-panel fly-panel-user" pad20>
+        <div class="layui-tab layui-tab-brief" lay-filter="user">
+            <ul class="layui-tab-title">
+                <li><a th:href="@{/login}">登入</a></li>
+                <li><a th:href="@{/register}">注册</a></li>
+                <li class="layui-this">找回密码</li>
+            </ul>
+            <div class="layui-form layui-tab-content" id="LAY_ucm" style="padding: 20px 0;">
+                <div class="layui-tab-item layui-show">
+                    <div class="layui-form layui-form-pane">
+                        <form method="post" id="findForm" onsubmit="return false;" action="##">
+                            <div class="layui-form-item">
+                                <label for="loginName" class="layui-form-label">注册邮箱</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="loginName" name="loginName" required lay-verify="required"
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item" style="margin-left: 10%">
+                                <button class="layui-btn" lay-filter="*" lay-submit onclick="find()">立即找回</button>
+                                <span style="padding-left:20px;"></span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="fly-footer">
+    <p>BuzzBazaar &copy 2024 <a href="https://github.com/TnjMyWife/BuzzBazar" target="_blank">Aaron,FYH All rights Reserved.</a></p>
+</div>
+
+<script th:src="@{/js/public.js}"></script>
+<script th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript">
+    layui.use(['layer', 'jquery'], function () {
+        var layer = layui.layer;
+        var $ = layui.$;
+        window.find = function () {
+            var params = $("#findForm").serialize();
+            var url = '/sendValidationEmail';
+            $.ajax({
+                type: 'POST',//方法类型
+                url: url,
+                data: params,
+                success: function (result) {
+                    if (result.resultCode == 200) {
+                        layer.confirm('重置密码邮件已发送，请及时查看邮箱!', {
+                            icon: 3,
+                            skin: 'layui-layer-molv',
+                            title: '提示'
+                        }, function (index) {
+                            layer.close(index);
+                        });
+                    } else {
+                        layer.msg(result.message);
+                    }
+                },
+                error: function () {
+                    layer.alert('操作失败!', {title: '提醒', skin: 'layui-layer-molv', icon: 2});
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

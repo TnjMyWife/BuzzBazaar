@@ -10,6 +10,7 @@ public class PagePostEntity {
     private String postCategoryName;
     private Long postViews;
     private Long postComments;
+    private Long postLikes;
     private Long postCollects;
     private String nickName;
     private String headImgUrl;
@@ -63,6 +64,14 @@ public class PagePostEntity {
         this.postCollects = postCollects;
     }
 
+    public Long getPostLikes() {
+        return postLikes;
+    }
+
+    public void setPostLikes(Long postLikes) {
+        this.postLikes = postLikes;
+    }
+
     public String getNickName() {
         return nickName;
     }
@@ -107,6 +116,7 @@ public class PagePostEntity {
         sb.append(", postViews=").append(postViews);
         sb.append(", postComments=").append(postComments);
         sb.append(", postCollects=").append(postCollects);
+        sb.append(", postLikes=").append(postLikes);
         sb.append("]");
         return sb.toString();
     }

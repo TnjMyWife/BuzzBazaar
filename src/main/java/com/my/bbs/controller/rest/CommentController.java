@@ -1,5 +1,6 @@
 package com.my.bbs.controller.rest;
 
+import com.github.houbb.sensitive.word.core.SensitiveWordHelper;
 import com.my.bbs.common.Constants;
 import com.my.bbs.common.ServiceResultEnum;
 import com.my.bbs.entity.CommentEntity;
@@ -17,6 +18,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpSession;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Controller
 public class CommentController {
 
@@ -28,7 +32,6 @@ public class CommentController {
     public Result replyPost(@RequestParam("postId") Long postId,
                             @RequestParam(value = "parentCommentUserId", required = false) Long parentCommentUserId,
                             @RequestParam("commentBody") String commentBody,
-                            @RequestParam("verifyCode") String verifyCode,
                             HttpSession httpSession) {
         if (null == postId || postId < 0) {
             return ResultGenerator.genFailResult("postId参数错误");
@@ -37,11 +40,14 @@ public class CommentController {
             return ResultGenerator.genFailResult("commentBody参数错误");
         }
         if (commentBody.trim().length() > 200) {
-            return ResultGenerator.genFailResult("评论内容过长");
+            return ResultGenerator.genFailResult("审核未通过。原因：评论内容过长。");
         }
-        String kaptchaCode = httpSession.getAttribute(Constants.VERIFY_CODE_KEY) + "";
-        if (!StringUtils.hasLength(kaptchaCode) || !verifyCode.toLowerCase().equals(kaptchaCode)) {
-            return ResultGenerator.genFailResult(ServiceResultEnum.LOGIN_VERIFY_CODE_ERROR.getResult());
+        List<String> sentitives = SensitiveWordHelper.findAll(commentBody);
+        if (!sentitives.isEmpty()) {
+            String joinedSentitives = sentitives.stream()
+                    .map(s -> "\"" + s + "\"")
+                    .collect(Collectors.joining(", "));
+            return ResultGenerator.genFailResult("审核未通过。原因：评论包含敏感内容。" + joinedSentitives);
         }
         UserEntity user = (UserEntity) httpSession.getAttribute(Constants.USER_SESSION_KEY);
 

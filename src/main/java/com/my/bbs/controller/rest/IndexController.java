@@ -36,7 +36,6 @@ public class IndexController {
         }
 
         /* 将不同数据设置到请求属性中，以便在Thymeleaf模板中访问 */
-
         // 设置类别数据
         request.setAttribute("bbsPostCategories", categoryEntities);
 

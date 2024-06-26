@@ -22,6 +22,10 @@ public class PostEntity {
 
     private Long postCollects;
 
+    private Long postLikes;
+
+    private Long postShares;
+
     private Date lastUpdateTime;
 
     private Date createTime;
@@ -100,6 +104,22 @@ public class PostEntity {
         this.postCollects = postCollects;
     }
 
+    public Long getPostLikes() {
+        return postLikes;
+    }
+
+    public void setPostLikes(Long postLikes) {
+        this.postLikes = postLikes;
+    }
+
+    public Long getPostShares() {
+        return postShares;
+    }
+
+    public void setPostShares(Long postShares) {
+        this.postShares = postShares;
+    }
+
     public Date getLastUpdateTime() {
         return lastUpdateTime;
     }
@@ -139,6 +159,8 @@ public class PostEntity {
         sb.append(", postViews=").append(postViews);
         sb.append(", postComments=").append(postComments);
         sb.append(", postCollects=").append(postCollects);
+        sb.append(", postLikes=").append(postLikes);
+        sb.append(", postShares=").append(postShares);
         sb.append(", lastUpdateTime=").append(lastUpdateTime);
         sb.append(", createTime=").append(createTime);
         sb.append(", postContent=").append(postContent);

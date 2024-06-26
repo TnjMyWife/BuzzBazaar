@@ -63,12 +63,13 @@
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label for="location" class="layui-form-label">城市</label>
+                            <label for="location" class="layui-form-label">所在地</label>
                             <div class="layui-input-inline">
                                 <input type="text" id="location" name="location" autocomplete="off"
-                                       th:value="${bbsUser.location}"
+                                       th:value="${bbsUser.location}" disabled
                                        class="layui-input">
                             </div>
+                            <div class="layui-form-mid layui-word-aux">IP属地与登录地有关</div>
                         </div>
                         <div class="layui-form-item layui-form-text">
                             <label for="introduce" class="layui-form-label">签名</label>
@@ -121,7 +122,7 @@
                                        lay-verify="required"
                                        autocomplete="off" class="layui-input">
                             </div>
-                            <div class="layui-form-mid layui-word-aux">6到20个字符</div>
+                            <div class="layui-form-mid layui-word-aux">6到20个字符，需要包括数字、大写字母、小写字母和特殊符号</div>
                         </div>
                         <div class="layui-form-item">
                             <button class="layui-btn" key="set-mine" lay-filter="*" lay-submit onclick="updatePassword()">
@@ -189,11 +190,6 @@
                 layer.alert('请选择性别!', {title: '提醒', skin: 'layui-layer-molv', icon: 2});
                 return;
             }
-            var location = $("#location").val();
-            if (isNull(location)) {
-                layer.alert('请输入所在城市!', {title: '提醒', skin: 'layui-layer-molv', icon: 2});
-                return;
-            }
             var introduce = $("#introduce").val();
             if (isNull(introduce)) {
                 layer.alert('请输入个性签名!', {title: '提醒', skin: 'layui-layer-molv', icon: 2});
@@ -207,7 +203,14 @@
                 data: params,
                 success: function (result) {
                     if (result.resultCode == 200) {
-                        layer.alert('修改成功!', {title: '信息', skin: 'layui-layer-molv', icon: 1});
+                        layer.confirm('修改成功!', {
+                            icon: 3,
+                            skin: 'layui-layer-molv',
+                            title: '提示'
+                        }, function (index) {
+                            layer.close(index);
+                            window.location.reload();
+                        });
                     } else {
                         layer.msg(result.message);
                     }
@@ -233,7 +236,14 @@
                 url: url,
                 success: function (result) {
                     if (result.resultCode == 200) {
-                        layer.alert('上传成功!', {title: '信息', skin: 'layui-layer-molv', icon: 1});
+                        layer.confirm('上传头像成功!', {
+                            icon: 3,
+                            skin: 'layui-layer-molv',
+                            title: '提示'
+                        }, function (index) {
+                            layer.close(index);
+                            window.location.reload();
+                        });
                     } else {
                         layer.msg(result.message);
                     }

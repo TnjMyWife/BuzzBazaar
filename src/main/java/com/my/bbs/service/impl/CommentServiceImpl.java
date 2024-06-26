@@ -115,6 +115,7 @@ public class CommentServiceImpl implements CommentService {
                         UserEntity tempUser = userMap.get(pageCommentEntity.getCommentUserId());
                         pageCommentEntity.setHeadImgUrl(tempUser.getHeadImgUrl());
                         pageCommentEntity.setNickName(tempUser.getNickName());
+                        pageCommentEntity.setLocation(tempUser.getLocation());
                     }
                 }
             }

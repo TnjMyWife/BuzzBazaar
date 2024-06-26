@@ -10,6 +10,8 @@
         <result column="post_status" jdbcType="TINYINT" property="postStatus"/>
         <result column="post_views" jdbcType="BIGINT" property="postViews"/>
         <result column="post_comments" jdbcType="BIGINT" property="postComments"/>
+        <result column="post_likes" jdbcType="BIGINT" property="postLikes"/>
+        <result column="post_shares" jdbcType="BIGINT" property="postShares"/>
         <result column="post_collects" jdbcType="BIGINT" property="postCollects"/>
         <result column="last_update_time" jdbcType="TIMESTAMP" property="lastUpdateTime"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
@@ -19,7 +21,7 @@
     </resultMap>
     <sql id="Base_Column_List">
     post_id, publish_user_id, post_title, post_category_id, post_category_name,
-    post_status, post_views, post_comments, post_collects, last_update_time,
+    post_status, post_views, post_comments, post_collects, post_likes, post_shares, last_update_time,
     create_time
     </sql>
     <sql id="Blob_Column_List">
@@ -47,7 +49,7 @@
         <include refid="Base_Column_List"/>
         from post
         where post_status = 1  and create_time &gt; DATE_SUB(now(), INTERVAL 7 DAY) order by post_comments desc
-        <!-- 近七天的热议帖子，默认读取6条数据，可自行修改 -->
+        <!-- 近七天的热议帖子 -->
         limit 6
     </select>
     <select id="findBBSPostList" parameterType="Map" resultMap="BaseResultMap">
@@ -58,7 +60,14 @@
             and post_category_id = #{categoryId}
         </if>
         <if test="keyword!=null and keyword!=''">
-            and post_title like CONCAT('%',#{keyword},'%')
+            and (
+                post_title like CONCAT('%', #{keyword}, '%')
+                or post_content like CONCAT('%', #{keyword}, '%')
+                or post_category_name like CONCAT('%', #{keyword}, '%')
+                or publish_user_id = any(
+                    select user_id from user where nick_name like CONCAT('%', #{keyword}, '%')
+                )
+            )
         </if>
         <choose>
             <!-- 周榜 -->
@@ -139,12 +148,14 @@
         insert into post (post_id, publish_user_id, post_title,
                                  post_category_id, post_category_name,
                                  post_status, post_views, post_comments,
-                                 post_collects, last_update_time,
+                                 post_collects, post_likes,
+                                 post_shares, last_update_time,
                                  create_time, post_content)
         values (#{postId,jdbcType=BIGINT}, #{publishUserId,jdbcType=BIGINT}, #{postTitle,jdbcType=VARCHAR},
                 #{postCategoryId,jdbcType=INTEGER}, #{postCategoryName,jdbcType=VARCHAR},
                 #{postStatus,jdbcType=TINYINT}, #{postViews,jdbcType=BIGINT}, #{postComments,jdbcType=BIGINT},
-                #{postCollects,jdbcType=BIGINT}, #{lastUpdateTime,jdbcType=TIMESTAMP},
+                #{postCollects,jdbcType=BIGINT}, #{postLikes,jdbcType=BIGINT},
+                #{postShares,jdbcType=BIGINT}, #{lastUpdateTime,jdbcType=TIMESTAMP},
                 #{createTime,jdbcType=TIMESTAMP}, #{postContent,jdbcType=LONGVARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.my.bbs.entity.PostEntity">
@@ -176,6 +187,12 @@
             </if>
             <if test="postCollects != null">
                 post_collects,
+            </if>
+            <if test="postLikes != null">
+                post_likes,
+            </if>
+            <if test="postShares != null">
+                post_shares,
             </if>
             <if test="lastUpdateTime != null">
                 last_update_time,
@@ -215,6 +232,12 @@
             <if test="postCollects != null">
                 #{postCollects,jdbcType=BIGINT},
             </if>
+            <if test="postLikes != null">
+                #{postLikes,jdbcType=BIGINT},
+            </if>
+            <if test="postShares != null">
+                #{postShares,jdbcType=BIGINT},
+            </if>
             <if test="lastUpdateTime != null">
                 #{lastUpdateTime,jdbcType=TIMESTAMP},
             </if>
@@ -253,6 +276,12 @@
             <if test="postCollects != null">
                 post_collects = #{postCollects,jdbcType=BIGINT},
             </if>
+            <if test="postLikes != null">
+                post_likes = #{postLikes,jdbcType=BIGINT},
+            </if>
+            <if test="postShares != null">
+                post_shares = #{postShares,jdbcType=BIGINT},
+            </if>
             <if test="lastUpdateTime != null">
                 last_update_time = #{lastUpdateTime,jdbcType=TIMESTAMP},
             </if>
@@ -275,6 +304,8 @@
             post_views         = #{postViews,jdbcType=BIGINT},
             post_comments      = #{postComments,jdbcType=BIGINT},
             post_collects      = #{postCollects,jdbcType=BIGINT},
+            post_likes         = #{postLikes,jdbcType=BIGINT},
+            post_shares        = #{postShares,jdbcType=BIGINT},
             last_update_time   = #{lastUpdateTime,jdbcType=TIMESTAMP},
             create_time        = #{createTime,jdbcType=TIMESTAMP},
             post_content       = #{postContent,jdbcType=LONGVARCHAR}
@@ -290,6 +321,8 @@
             post_views         = #{postViews,jdbcType=BIGINT},
             post_comments      = #{postComments,jdbcType=BIGINT},
             post_collects      = #{postCollects,jdbcType=BIGINT},
+            post_likes         = #{postLikes,jdbcType=BIGINT},
+            post_shares        = #{postShares,jdbcType=BIGINT},
             last_update_time   = #{lastUpdateTime,jdbcType=TIMESTAMP},
             create_time        = #{createTime,jdbcType=TIMESTAMP}
         where post_id = #{postId,jdbcType=BIGINT}

@@ -20,6 +20,8 @@ public class MyBBSWebMvcConfigurer implements WebMvcConfigurer {
         registry.addInterceptor(myBBSLoginInterceptor)
                 .excludePathPatterns("/register")
                 .excludePathPatterns("/login")
+                .excludePathPatterns("/find")
+                .excludePathPatterns("/reset")
                 .addPathPatterns("/logout")
                 .addPathPatterns("/addPostPage")
                 .addPathPatterns("/addPost")

@@ -29,7 +29,7 @@
         </th:block>
         </span>
         <i class="iconfont icon-shijian"></i><span th:text="${#dates.format(bbsUser.createTime, 'yyyy-MM-dd')+' 加入'}"/>
-        <i class="iconfont icon-chengshi"></i><span th:text="${bbsUser.location}">阿姆斯特丹</span>
+        <i class="iconfont icon-chengshi"></i><span th:text="${bbsUser.location}">阿姆斯特丹 : 未知</span>
     </p>
 
     <p class="fly-home-sign" th:text="${bbsUser.introduce}">............</p>

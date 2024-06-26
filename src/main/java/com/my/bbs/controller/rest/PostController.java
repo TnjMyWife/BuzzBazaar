@@ -1,5 +1,6 @@
 package com.my.bbs.controller.rest;
 
+import com.github.houbb.sensitive.word.core.SensitiveWordHelper;
 import com.my.bbs.common.Constants;
 import com.my.bbs.common.ServiceResultEnum;
 import com.my.bbs.entity.PostEntity;
@@ -19,6 +20,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class PostController {
@@ -119,17 +121,32 @@ public class PostController {
         }
         CategoryEntity category = categoryService.selectById(postCategoryId);
         if (null == category) {
-            return ResultGenerator.genFailResult("postCategoryId参数错误");
+            return ResultGenerator.genFailResult("帖子类别参数错误");
         }
         if (!StringUtils.hasLength(postContent)) {
             return ResultGenerator.genFailResult("postContent参数错误");
         }
         if (postTitle.trim().length() > 32) {
-            return ResultGenerator.genFailResult("标题过长");
+            return ResultGenerator.genFailResult("审核未通过。原因：标题过长");
+        }
+        List<String> sentitives = SensitiveWordHelper.findAll(postTitle);
+        if (!sentitives.isEmpty()) {
+            String joinedSentitives = sentitives.stream()
+                    .map(s -> "\"" + s + "\"")
+                    .collect(Collectors.joining(", "));
+            return ResultGenerator.genFailResult("审核未通过。原因：标题包含敏感内容。" + joinedSentitives);
         }
         if (postContent.trim().length() > 100000) {
-            return ResultGenerator.genFailResult("内容过长");
+            return ResultGenerator.genFailResult("审核未通过。原因：内容过长");
         }
+        sentitives = SensitiveWordHelper.findAll(postContent);
+        if (!sentitives.isEmpty()) {
+            String joinedSentitives = sentitives.stream()
+                    .map(s -> "\"" + s + "\"")
+                    .collect(Collectors.joining(", "));
+            return ResultGenerator.genFailResult("审核未通过。原因：帖子包含敏感内容。" + joinedSentitives);
+        }
+
         String kaptchaCode = httpSession.getAttribute(Constants.VERIFY_CODE_KEY) + "";
         if (!StringUtils.hasLength(kaptchaCode) || !verifyCode.toLowerCase().equals(kaptchaCode)) {
             return ResultGenerator.genFailResult(ServiceResultEnum.LOGIN_VERIFY_CODE_ERROR.getResult());
@@ -158,6 +175,36 @@ public class PostController {
         }
         UserEntity user = (UserEntity) httpSession.getAttribute(Constants.USER_SESSION_KEY);
         if (postService.deletePost(user.getUserId(), postId)) {
+            return ResultGenerator.genSuccessResult();
+        } else {
+            return ResultGenerator.genFailResult("请求失败，请检查参数及账号是否有操作权限");
+        }
+    }
+
+    @PostMapping("/likePost/{postId}")
+    @ResponseBody
+    public Result likePost(@PathVariable("postId") Long postId) {
+        PostEntity post = postService.getPostById(postId);
+        if (post == null) {
+            return ResultGenerator.genFailResult("postId参数错误");
+        }
+        post.setPostLikes(post.getPostLikes()+1);
+        if (postService.updatePost(post)) {
+            return ResultGenerator.genSuccessResult();
+        } else {
+            return ResultGenerator.genFailResult("请求失败，请检查参数及账号是否有操作权限");
+        }
+    }
+
+    @PostMapping("/sharePost/{postId}")
+    @ResponseBody
+    public Result sharePost(@PathVariable("postId") Long postId) {
+        PostEntity post = postService.getPostById(postId);
+        if (post == null) {
+            return ResultGenerator.genFailResult("postId参数错误");
+        }
+        post.setPostShares(post.getPostShares()+1);
+        if (postService.updatePost(post)) {
             return ResultGenerator.genSuccessResult();
         } else {
             return ResultGenerator.genFailResult("请求失败，请检查参数及账号是否有操作权限");
