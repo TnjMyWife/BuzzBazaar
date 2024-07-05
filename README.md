@@ -1,5 +1,18 @@
 # BuzzBazaar项目指导
 
+**目前代码已在github开源：**[TnjMyWife/BuzzBazaar: A WeB BBS, for Software Engineering Project (github.com)](https://github.com/TnjMyWife/BuzzBazaar)
+
+**已上线服务器：**[http://8.134.124.93/](http://8.134.124.93/)
+
+**小组成员：**
+
+| 姓名   | 学号     |
+| ------ | -------- |
+| 黄军龙 | 21307233 |
+| 方宇豪 | 21307260 |
+
+
+
 ## 项目结构树
 
 ```
@@ -81,6 +94,10 @@
 #### 		BeanUtil：
 
 ​			Bean用于对象复制和转换，处理数据的传输
+
+#### IpUtil：
+
+​			用于获取用户Ip，然后根据Ip利用第三方Ip2Region进行地区解析
 
 #### 		MD5Util:
 
@@ -176,13 +193,12 @@
 
 ##### CollectController：
 
-- "/addCollect/{postId}"和"/delCollect/{postId}"分别处理添加收藏和取消收藏。
+- "/addCollect/{postId}"和"/delCollect/{postId}"分别处理添加收藏和取消收藏
 
-    
+##### ValidateController：
 
-  
-
-​		
+- 处理“/sendValidationEmail”请求发送重置邮件的Post请求。
+- 处理“/resetPassword”请求修改密码的Post请求，将url的token和数据库里的token匹配，成功后便可修改密码。
 
 ### 5.entity：数据库表实体与自定义数据实体
 
@@ -206,6 +222,10 @@
 
 ​			用户实体
 
+#### ValidateEntity：
+
+​			验证信息实体
+
 #### 		HotTopicBBSPostListEntity
 
 ​			热门帖子实体，页面展示时仅需要id、标题、评论数三个字段
@@ -222,7 +242,7 @@
 
 ​			最近评论列表-实体类，个人中心页面展示时需要，只需要帖子ID、标题、评论内容、评论时间 。
 
-### 6.dao数据访问层
+### 6.DAO数据访问层
 
 mybatis框架下的数据访问层，里面的方法有.xml中相关语句映射而来。新增方法时，需要在.xml编写sql语句并保证传入参数与ID对应、类型对应，以及返回结果的类型的统一。
 
@@ -235,6 +255,8 @@ mybatis框架下的数据访问层，里面的方法有.xml中相关语句映射
 #### PostMapper
 
 #### UserMapper
+
+#### ValidateMapper
 
 ### 7.service服务层
 
@@ -264,7 +286,9 @@ service利用dao层提供的方便接口，实现各种业务逻辑。具体实�
 
 ​		用户注册、用户登录、查看用户信息、修改当前用户信息、修改用户头像、修改密码
 
-### 8.intercepter拦截器
+#### ValidateService：邮箱验证相关业务
+
+​		验证信息的创建、令牌检测、检查用户是否满足发送条件、检查连接是否失效
 
 
 

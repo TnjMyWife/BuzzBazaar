@@ -14,9 +14,9 @@ function validLength(obj, length) {
     return false;
 }
 
-/* 用户名称验证 4到16位（字母，数字，下划线，减号） */
+/* 用户名称验证 4到8位（字母，数字，下划线，减号） */
 function validUserName(userName) {
-    var pattern = /^[\u4E00-\u9FA5\uF900-\uFA2D|\w]{2,8}$/;
+    var pattern = /^[\u4E00-\u9FA5\uF900-\uFA2D|\w]{4,8}$/;
     if (pattern.test(userName.trim())) {
         return true;
     } else {

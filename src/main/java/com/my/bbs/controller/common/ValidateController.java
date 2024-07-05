@@ -53,8 +53,8 @@ public class ValidateController {
                 ValidateEntity validate = new ValidateEntity();
                 validateService.insertNewResetRecord(validate, user, UUID.randomUUID().toString());
                 // 设置邮件内容
-                //String appUrl = "http://localhost";
-                String appUrl = "http://8.134.124.93";
+                String appUrl = "http://localhost";
+                //String appUrl = "http://8.134.124.93";
                 MimeMessage mimeMessage = mailSender.createMimeMessage();
                 // multipart模式
                 MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "utf-8");

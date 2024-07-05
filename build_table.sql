@@ -16,6 +16,8 @@ CREATE TABLE `post` (
                                `post_views` bigint NOT NULL DEFAULT '0' COMMENT '阅读量',
                                `post_comments` bigint NOT NULL DEFAULT '0' COMMENT '评论量',
                                `post_collects` bigint NOT NULL DEFAULT '0' COMMENT '收藏量',
+                               `post_likes` bigint DEFAULT '0' NULL comment '点赞数',
+                               `post_shares` bigint DEFAULT '0' NULL comment '转发量',
                                `last_update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '最新修改时间',
                                `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
                                PRIMARY KEY (`post_id`) USING BTREE
@@ -72,3 +74,21 @@ CREATE TABLE `comment` (
                                    `is_deleted` tinyint DEFAULT '0' COMMENT '是否删除 0-未删除 1-已删除',
                                    PRIMARY KEY (`comment_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
+create table if not exists `pm_validate`
+(
+    id           int auto_increment primary key,
+    user_id      bigint      not null,
+    email        varchar(32) not null,
+    reset_token  varchar(40) not null,
+    type         varchar(20) not null,
+    gmt_create   datetime    null,
+    gmt_modified datetime    null
+);
+
+INSERT INTO bbsdb.category (category_id, category_name, category_rank, is_deleted, create_time) VALUES (1, '二手闲置', 10, 0, '2024-05-02 00:13:54');
+INSERT INTO bbsdb.category (category_id, category_name, category_rank, is_deleted, create_time) VALUES (2, '打听求助', 9, 0, '2024-05-02 00:13:54');
+INSERT INTO bbsdb.category (category_id, category_name, category_rank, is_deleted, create_time) VALUES (3, '恋爱交友', 8, 0, '2024-05-02 00:13:54');
+INSERT INTO bbsdb.category (category_id, category_name, category_rank, is_deleted, create_time) VALUES (4, '兼职招聘', 7, 0, '2024-05-02 00:13:54');
+INSERT INTO bbsdb.category (category_id, category_name, category_rank, is_deleted, create_time) VALUES (5, '校园招聘', 6, 0, '2024-05-02 00:13:54');
+INSERT INTO bbsdb.category (category_id, category_name, category_rank, is_deleted, create_time) VALUES (6, '其它', 5, 0, '2024-05-02 00:13:54');

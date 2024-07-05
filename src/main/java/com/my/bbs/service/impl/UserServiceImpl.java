@@ -21,6 +21,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public String register(String loginName, String password, String nickName, String area) {
         // 用户名已存在
+        // 分支1
         if (userMapper.selectByLoginName(loginName) != null) {
             return ServiceResultEnum.SAME_LOGIN_NAME_EXIST.getResult();
         }
@@ -38,6 +39,7 @@ public class UserServiceImpl implements UserService {
         newUser.setGender("未知");
         String passwordMD5 = MD5Util.MD5Encode(password, "UTF-8");
         newUser.setPasswordMd5(passwordMD5);
+        // 分支2
         if (userMapper.insertSelective(newUser) > 0) {
             return ServiceResultEnum.SUCCESS.getResult();
         }
@@ -48,6 +50,7 @@ public class UserServiceImpl implements UserService {
     public String login(String loginName, String passwordMD5, String area, HttpSession httpSession) {
         UserEntity user = userMapper.selectByLoginNameAndPasswd(loginName, passwordMD5);
         // 检查用户对象和会话对象
+        // 分支1
         if (user != null && httpSession != null) {
             // 将当前用户保存到会话中
             httpSession.setAttribute(Constants.USER_SESSION_KEY, user);

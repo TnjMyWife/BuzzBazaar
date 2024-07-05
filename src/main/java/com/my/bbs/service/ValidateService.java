@@ -47,14 +47,14 @@ public class ValidateService{
 
     /* 验证是否发送重置邮件：每个email的重置密码每日请求上限为requestPerDay次，与上一次的请求时间间隔为interval分钟。 */
     public boolean sendValidateLimitation(String email, long requestPerDay, long interval){
-        List<ValidateEntity> validateDaoList = validateMapper.selectByEmail(email);
+        List<ValidateEntity> validateEntities = validateMapper.selectByEmail(email);
         // 若查无记录，意味着第一次申请，直接放行
-        if (validateDaoList.isEmpty()) {
+        if (validateEntities.isEmpty()) {
             return true;
         }
         // 有记录，则判定是否频繁申请以及是否达到日均请求上线
-        long countTodayValidation = validateDaoList.stream().filter(x-> DateUtils.isSameDay(x.getGmtModified(), new Date())).count();
-        Optional validate = validateDaoList.stream().map(ValidateEntity::getGmtModified).max(Date::compareTo);
+        long countTodayValidation = validateEntities.stream().filter(x-> DateUtils.isSameDay(x.getGmtModified(), new Date())).count();
+        Optional validate = validateEntities.stream().map(ValidateEntity::getGmtModified).max(Date::compareTo);
         Date dateOfLastRequest = new Date();
         if (validate.isPresent()) dateOfLastRequest = (Date) validate.get();
         long intervalForLastRequest = new Date().getTime() - dateOfLastRequest.getTime();
